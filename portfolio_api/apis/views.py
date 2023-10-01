@@ -8,8 +8,6 @@ from .serializers import GeeksSerializer
 from .models import GeeksModel
  
 # create a viewset
- 
- 
 class GeeksView(APIView):
     # define queryset
 
