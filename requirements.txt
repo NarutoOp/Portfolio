@@ -1,0 +1,8 @@
+asgiref
+Django
+django-rest-framework
+djangorestframework
+pytz
+sqlparse
+typing_extensions
+tzdata
