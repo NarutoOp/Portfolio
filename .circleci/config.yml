@@ -10,6 +10,7 @@ jobs:
       - run:
           command: |
             python -m venv venv
+            cd venv
             ls
             . venv/scripts/activate
             pip install -r requirements.txt
