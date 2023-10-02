@@ -91,7 +91,7 @@ workflows:
       - build image:
           # Build needs to finish first
           requires:
-            - build
+            - build and test
           # Only push images from the main branch
           filters:
             branches:
