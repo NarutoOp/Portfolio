@@ -49,6 +49,10 @@ jobs:
           name: Build Docker image
           # Tag using the image tag above
           command: docker build --tag "${IMAGE_TAG}" .
+
+      - run:
+          name: Check image
+          # Tag using the image tag above
           command: docker images
 
       # Archive and persist the Docker image
