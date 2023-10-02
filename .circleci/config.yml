@@ -10,6 +10,7 @@ jobs:
       - run:
           command: |
             python -m venv venv
+            ls
             . venv/scripts/activate
             pip install -r requirements.txt
       - save_cache:
@@ -20,6 +21,7 @@ jobs:
           name: Running tests
           command: |
             . venv/scripts/activate
+            ls
             cd portfolio_api
             python manage.py test
       - store_artifacts:
