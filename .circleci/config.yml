@@ -1,11 +1,19 @@
 version: 2.1
 
+parameters:
+  major_version:
+    type: integer
+    default: 0
+  minor_version:
+    type: integer
+    default: 0
+
 # Define a common Docker container and environment for jobs
 executors:
   docker-publisher:
     # Define the image tag
     environment:
-      IMAGE_TAG: narutoop/portfolio-api:0.0."${CIRCLE_BUILD_NUM}"
+      IMAGE_TAG: narutoop/portfolio-api:<< major_version >>.<< minor_version >>."<< pipeline.number >>
     # Use `docker:stable` as the Docker image for this executor
     docker:
       - image: cimg/python:3.10.5
