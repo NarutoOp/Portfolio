@@ -91,30 +91,30 @@ jobs:
       - run:
           name: Publish Docker image
           command: |
-            echo "${DOCKERHUB_PASS}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            docker login --username "${DOCKERHUB_USERNAME}" --password ${DOCKERHUB_PASS}
             docker push "${IMAGE_TAG}"
 
 workflows:
   version: 2
   build-push:
     jobs:
-      # Run the build first
+      # Run build and test on all branches
       - build and test
-      # Push the image second
+      # Build the image first
       - build image:
           # Build needs to finish first
           requires:
             - build and test
+          # Only create images from the main branch
+          filters:
+            branches:
+              only: develop
+      # Push the image second
+      - push image:
+          # Build image needs to finish first
+          requires:
+            - build image
           # Only push images from the main branch
           filters:
             branches:
-              only: automate-image-creation
-
-      # - push image:
-      #     # Build needs to finish first
-      #     requires:
-      #       - build image
-      #     # Only push images from the main branch
-      #     filters:
-      #       branches:
-      #         only: develop
+              only: develop
