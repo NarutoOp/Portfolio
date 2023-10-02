@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Running tests
           command: |
-            . venv/bin/activate
+            . venv/scripts/activate
             cd portfolio_api
             python manage.py test
       - store_artifacts:
