@@ -13,7 +13,7 @@ executors:
   docker-publisher:
     # Define the image tag
     environment:
-      IMAGE_TAG: narutoop/portfolio-api:<< pipeline.parameter.major-version >>.<< pipeline.parameter.minor-version >>.<< pipeline.number >>
+      IMAGE_TAG: narutoop/portfolio-api:<< pipeline.parameters.major-version >>.<< pipeline.parameters.minor-version >>.<< pipeline.number >>
     # Use `docker:stable` as the Docker image for this executor
     docker:
       - image: cimg/python:3.10.5
