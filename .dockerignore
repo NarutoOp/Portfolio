@@ -17,6 +17,7 @@
 **/.toolstarget
 **/.vs
 **/.vscode
+**/.circleci
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm

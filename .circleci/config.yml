@@ -1,8 +1,28 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+
+parameters:
+  major-version:
+    type: integer
+    default: 0
+  minor-version:
+    type: integer
+    default: 0
+
+# Define a common Docker container and environment for jobs
+executors:
+  docker-publisher:
+    # Define the image tag
+    environment:
+      IMAGE_TAG: narutoop/portfolio-api:<< pipeline.parameters.major-version >>.<< pipeline.parameters.minor-version >>.<< pipeline.number >>
+    # Use `docker:stable` as the Docker image for this executor
     docker:
       - image: cimg/python:3.10.5
+
+jobs:
+  build and test:
+    # Use docker-publisher from above as the Docker container to run this job in
+    executor: docker-publisher
+
     steps:
       - checkout
       - restore_cache:
@@ -25,3 +45,76 @@ jobs:
       - store_artifacts:
           path: test-reports/
           destination: python_app
+
+  build image:
+    # Use docker-publisher from above as the Docker container to run this job in
+    executor: docker-publisher
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          # Tag using the image tag above
+          command: docker build --tag "${IMAGE_TAG}" .
+
+      - run:
+          name: Check image
+          # Tag using the image tag above
+          command: docker images
+
+      # Archive and persist the Docker image
+      - run:
+          name: Archive Docker image
+          command: docker save --output image.tar "${IMAGE_TAG}"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+
+  push image:
+    # Use docker-publisher from above as the Docker container to run this job in
+    executor: docker-publisher
+
+    steps:
+      # Set up a separate Docker environment to run `docker` commands in
+      - setup_remote_docker
+
+      # Load and un-archive the Docker image
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Load Docker image
+          command: docker load --input /tmp/workspace/image.tar
+
+      # Log in to Docker Hub and push the image
+      - run:
+          name: Publish Docker image
+          command: |
+            docker login --username "${DOCKERHUB_USERNAME}" --password ${DOCKERHUB_PASS}
+            docker push "${IMAGE_TAG}"
+
+workflows:
+  version: 2
+  build-push:
+    jobs:
+      # Run build and test on all branches
+      - build and test
+      # Build the image first
+      - build image:
+          # Build needs to finish first
+          requires:
+            - build and test
+          # Only create images from the main branch
+          filters:
+            branches:
+              only: develop
+      # Push the image second
+      - push image:
+          # Build image needs to finish first
+          requires:
+            - build image
+          # Only push images from the main branch
+          filters:
+            branches:
+              only: develop
