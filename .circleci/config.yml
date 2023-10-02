@@ -5,7 +5,7 @@ executors:
   docker-publisher:
     # Define the image tag
     environment:
-      IMAGE_TAG: narutoop/portfolio-api:0.0."${CIRCLE_BUILD_NUM}-${IMAGE_VERSION}"
+      IMAGE_TAG: narutoop/portfolio-api:0.0."${CIRCLE_BUILD_NUM}"
     # Use `docker:stable` as the Docker image for this executor
     docker:
       - image: cimg/python:3.10.5
